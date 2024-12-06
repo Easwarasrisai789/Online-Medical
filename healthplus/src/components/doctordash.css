@@ -1,60 +1,36 @@
-/* General container styling */
-.doctor1-dash-container {
-    font-family: 'Arial', sans-serif;
-    padding: 20px;
-    background-color: #f4f4f4;
-    height: 100vh; /* Ensure it occupies full height */
-    overflow-y: auto; /* Enable scrolling if content overflows */
-}
-
-/* Navbar styles */
-.doctor1-dash-navbar {
-    background-color: #333;
-    padding: 10px;
-    color: white;
-}
-
-.doctor1-dash-nav-links {
-    list-style: none;
-    padding: 0;
+/* Welcome modal styles */
+.doctor1-dash-welcome-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
 }
 
-.doctor1-dash-nav-links li {
-    display: inline;
+.doctor1-dash-welcome-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.doctor1-dash-nav-links a {
-    text-decoration: none;
-    color: white;
-    font-size: 1.2rem;
-    padding: 5px 10px;
-}
-
-.doctor1-dash-logout-button {
-    background-color: #f44336;
+.doctor1-dash-modal-close-button {
+    background-color: #4caf50;
     color: white;
     border: none;
-    padding: 5px 10px;
-    cursor: pointer;
+    padding: 10px 15px;
     border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
 }
 
-/* Welcome message styling */
-.doctor1-dash-welcome-message {
-    text-align: center;
-    margin-top: 20px;
-}
-
-/* Quick stats styling */
-.doctor1-dash-dashboard-stats {
-    display: flex;
-    justify-content: space-around;
-    margin-top: 30px;
-    padding: 20px;
-}
-
+/* Animation for quick stats */
 .doctor1-dash-quick-stats {
     background-color: #4caf50;
     color: white;
@@ -62,7 +38,8 @@
     border-radius: 8px;
     width: 30%;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    transition: all 0.3s ease, transform 0.2s ease-in-out;
+    animation: bounceIn 0.6s ease-out;
 }
 
 .doctor1-dash-quick-stats:hover {
@@ -70,37 +47,22 @@
     transform: translateY(-5px);
 }
 
-.doctor1-dash-quick-stats h2 {
-    margin-bottom: 15px;
+@keyframes bounceIn {
+    0% {
+        transform: translateY(-30px);
+        opacity: 0;
+    }
+    60% {
+        transform: translateY(10px);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
-.doctor1-dash-quick-stats ul {
-    list-style: none;
-    padding: 0;
-}
-
-.doctor1-dash-quick-stats li {
-    margin-bottom: 10px;
-}
-
-/* Recent activities and appointments sections */
-.doctor1-dash-recent-activities,
-.doctor1-dash-appointments {
-    padding: 20px;
-    margin-top: 30px;
-    max-height: 400px; /* Limit the height to ensure scrollability */
-    overflow-y: auto; /* Add vertical scroll if content exceeds the height */
-    border-radius: 8px;
-    background-color: #fff;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.doctor1-dash-recent-activities ul,
-.doctor1-dash-appointments {
-    list-style: none;
-    padding: 0;
-}
-
+/* Notification animation for activities */
 .doctor1-dash-recent-activities li {
     background-color: #fff;
     padding: 10px;
@@ -108,43 +70,18 @@
     border-radius: 5px;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease;
+    animation: slideIn 0.5s ease-in-out;
 }
 
-.doctor1-dash-recent-activities li:hover {
-    background-color: #f1f1f1;
-}
-
-.doctor1-dash-appointments {
-    display: flex;
-    flex-direction: column;
-}
-
-/* Appointment card styles */
-.doctor1-dash-appointment-card {
-    border: 1px solid #ccc;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 5px;
-    background-color: #f9f9f9;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.doctor1-dash-appointment-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Status colors for appointments */
-.doctor1-dash-appointment-card.pending {
-    border-left: 5px solid #ff9800;
-}
-
-.doctor1-dash-appointment-card.confirmed {
-    border-left: 5px solid #4caf50;
-}
-
-.doctor1-dash-appointment-card p {
-    margin: 5px 0;
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 /* Icon styles */

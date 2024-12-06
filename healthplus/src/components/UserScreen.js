@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './UserScreen.css';
 import LoadingSpinner from './LoadingSpinner'; // Import the LoadingSpinner component
@@ -9,14 +9,39 @@ function UserScreen() {
   ]);
   const [chatInput, setChatInput] = useState('');
   const [isLoadingSpinnerVisible, setIsLoadingSpinnerVisible] = useState(false);
-  const [isUserOnline, setIsUserOnline] = useState(true); // New state to track user status
+  const [isUserOnline, setIsUserOnline] = useState(true); // Track user status
   const navigate = useNavigate();
+  const videoRef = useRef(null); // Ref for video element
 
   useEffect(() => {
     // Ensure the user is set as online initially
     setIsUserOnline(true);
+
+    // Access the camera and stream video
+    const startVideoStream = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      } catch (error) {
+        console.error("Error accessing camera:", error);
+        alert("Unable to access the camera. Please check permissions and try again.");
+      }
+    };
+
+    startVideoStream();
+
+    // Copy videoRef.current to a local variable for cleanup
+    const currentVideoRef = videoRef.current;
+
     return () => {
-      setIsUserOnline(false); // Cleanup on unmount to mark user as offline
+      setIsUserOnline(false); // Cleanup to mark user as offline
+      // Stop video stream when component unmounts
+      if (currentVideoRef && currentVideoRef.srcObject) {
+        const tracks = currentVideoRef.srcObject.getTracks();
+        tracks.forEach((track) => track.stop());
+      }
     };
   }, []);
 
@@ -29,34 +54,44 @@ function UserScreen() {
 
   const handleEndSession = () => {
     setIsLoadingSpinnerVisible(true);
+    // Stop video stream when the session ends
+    if (videoRef.current && videoRef.current.srcObject) {
+      const tracks = videoRef.current.srcObject.getTracks();
+      tracks.forEach((track) => track.stop());
+    }
+
     setTimeout(() => {
       setIsLoadingSpinnerVisible(false);
-      setIsUserOnline(false); // Set user status to offline when session ends
+      setIsUserOnline(false); // Set user status to offline
       navigate('/home');
     }, 4000);
   };
 
   return (
     <div className="userscreen-container">
-      {/* Display loading spinner and message when isLoadingSpinnerVisible is true */}
+      {/* Display loading spinner */}
       {isLoadingSpinnerVisible && (
         <div className="loading-overlay">
           <LoadingSpinner message="Ending session..." />
         </div>
       )}
 
-      {/* Display user status box when isUserOnline is true */}
+      {/* User online status */}
       {isUserOnline && (
         <div className="user-status-box">
           <p>User is online</p>
         </div>
       )}
 
+      {/* Video Call Section */}
       <div className="userscreen-video-call">
-        <button onClick={handleEndSession} className="userscreen-end-session-button">End Session</button>
-        <p>Video Call</p>
+        <video ref={videoRef} autoPlay muted className="userscreen-video" />
+        <button onClick={handleEndSession} className="userscreen-end-session-button">
+          End Session
+        </button>
       </div>
 
+      {/* Chat Section */}
       <div className="userscreen-chat-section">
         <div className="userscreen-chat-box">
           <h3>Chat</h3>
@@ -74,7 +109,9 @@ function UserScreen() {
             onChange={(e) => setChatInput(e.target.value)}
             className="userscreen-input"
           />
-          <button onClick={handleSendMessage} className="userscreen-button">Send</button>
+          <button onClick={handleSendMessage} className="userscreen-button">
+            Send
+          </button>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './DoctorScreen.css';
 import LoadingSpinner from './LoadingSpinner'; // Import the LoadingSpinner component
@@ -11,14 +11,39 @@ function DoctorScreen() {
   ]);
   const [chatInput, setChatInput] = useState('');
   const [isLoadingSpinnerVisible, setIsLoadingSpinnerVisible] = useState(false);
-  const [isDoctorOnline, setIsDoctorOnline] = useState(true); // New state to track doctor status
+  const [isDoctorOnline, setIsDoctorOnline] = useState(true); // Track doctor status
   const navigate = useNavigate();
+  const videoRef = useRef(null); // Ref for video element
 
   useEffect(() => {
     // Ensure the doctor is set as online initially
     setIsDoctorOnline(true);
+
+    // Access the camera and stream video
+    const startVideoStream = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      } catch (error) {
+        console.error("Error accessing camera:", error);
+        alert("Unable to access the camera. Please check permissions and try again.");
+      }
+    };
+
+    startVideoStream();
+
+    // Copy videoRef.current to a local variable for cleanup
+    const currentVideoRef = videoRef.current;
+
     return () => {
-      setIsDoctorOnline(false); // Cleanup on unmount to mark doctor as offline
+      setIsDoctorOnline(false); // Cleanup to mark doctor as offline
+      // Stop video stream when component unmounts
+      if (currentVideoRef && currentVideoRef.srcObject) {
+        const tracks = currentVideoRef.srcObject.getTracks();
+        tracks.forEach((track) => track.stop());
+      }
     };
   }, []);
 
@@ -42,10 +67,16 @@ function DoctorScreen() {
 
   const handleCancelCall = () => {
     setIsLoadingSpinnerVisible(true);
+    // Stop video stream when the session ends
+    if (videoRef.current && videoRef.current.srcObject) {
+      const tracks = videoRef.current.srcObject.getTracks();
+      tracks.forEach((track) => track.stop());
+    }
+
     setTimeout(() => {
       setIsLoadingSpinnerVisible(false);
       setIsDoctorOnline(false); // Set doctor status to offline when call ends
-      navigate('/home');
+      navigate('/DoctorDash');
     }, 4000);
   };
 
@@ -65,32 +96,39 @@ function DoctorScreen() {
         </div>
       )}
 
+      {/* Video Call Section */}
       <div className="doctorscreen-video-call">
-        <button onClick={handleCancelCall} className="doctorscreen-cancel-call-button">Cancel Call</button>
-        <p>Video Call</p>
+        <video ref={videoRef} autoPlay muted className="doctorscreen-video" />
+        <button onClick={handleCancelCall} className="doctorscreen-cancel-call-button">
+          Cancel Call
+        </button>
       </div>
 
-      <div className="doctorscreen-chat-section">
-        <div className="doctorscreen-medicine-checkout">
-          <h3>Medicine Checkout</h3>
-          <div className="doctorscreen-medicine-list">
-            {medicines.map((medicine, index) => (
-              <div key={index} className="doctorscreen-medicine-item">
-                <span>{medicine}</span>
-                <button onClick={() => handleRemoveMedicine(medicine)} className="doctorscreen-remove-medicine">Remove</button>
-              </div>
-            ))}
-          </div>
-          <input
-            type="text"
-            placeholder="Add medicine"
-            value={medicineInput}
-            onChange={(e) => setMedicineInput(e.target.value)}
-            className="doctorscreen-input"
-          />
-          <button onClick={handleAddMedicine} className="doctorscreen-button">Add Medicine</button>
+      {/* Medicine Checkout Section */}
+      <div className="doctorscreen-medicine-checkout">
+        <h3>Medicine Checkout</h3>
+        <div className="doctorscreen-medicine-list">
+          {medicines.map((medicine, index) => (
+            <div key={index} className="doctorscreen-medicine-item">
+              <span>{medicine}</span>
+              <button onClick={() => handleRemoveMedicine(medicine)} className="doctorscreen-remove-medicine">
+                Remove
+              </button>
+            </div>
+          ))}
         </div>
+        <input
+          type="text"
+          placeholder="Add medicine"
+          value={medicineInput}
+          onChange={(e) => setMedicineInput(e.target.value)}
+          className="doctorscreen-input"
+        />
+        <button onClick={handleAddMedicine} className="doctorscreen-button">Add Medicine</button>
+      </div>
 
+      {/* Chat Section */}
+      <div className="doctorscreen-chat-section">
         <div className="doctorscreen-chat-box">
           <h3>Chat</h3>
           <div className="doctorscreen-chat-messages">
