@@ -11,6 +11,20 @@
     align-items: center;
     z-index: 9999;
   }
+
+  /* Image Styling */
+/* Image Styling */
+.payment-image {
+  display: block;
+  margin: 20px auto; /* Center the image and add space above and below */
+  width: 25%; /* Adjust to fit container width */
+  max-width: 500px; /* Limit the maximum width */
+  height: auto; /* Maintain aspect ratio */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: adds subtle shadow */
+}
+
+
   
   /* Container for the Payment Form */
   .payment-form-container {

@@ -21,6 +21,9 @@ import AppointmentPage from './components/AppointmentsPage';
 import PaymentPage from './components/PaymentPage';
 
 import DoctorScheduledAppointments from './components/DoctorScheduledAppointments';
+import Admin from './components/admin';
+import PatientDetailsPage from './components/PatientDetailsPage';
+import UserScreen from './components/UserScreen';
 
 
 
@@ -37,6 +40,8 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/reviews" element={<Reviews />} />
         <Route path="/DoctorScreen" element={<DoctorScreen />} />
+        <Route path="/UserScreen" element={<UserScreen />} />
+
         <Route path="/PatientScreen" element={<PatientScreen />} />
         <Route path="/ContactUs" element={<ContactUs />} />
         <Route path="/DoctorDash" element={<DoctorDash />} />
@@ -46,9 +51,11 @@ function App() {
         <Route path="/appointment" element={<Bookingforms />} />
         <Route path="/Bookings" element={<Viewbooking />} />
         <Route path="/AppointmentsPage" element={<AppointmentPage/>} />
-        <Route path="/PaymentPage" element={<PaymentPage/>}/>
-        
+        <Route path="/payment" element={<PaymentPage/>}/>
+        <Route path="/patientdetails" element={<PatientDetailsPage />} />
+
         <Route path="/DoctorScheduledAppointments" element={<DoctorScheduledAppointments/>}/>
+        <Route path="/admin" element={<Admin/>}/>
 
         
         

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import HomeNavbar from "./HomeNavbar"; // Import the extracted HomeNavbar
+import HomeNavbar from "./HomeNavbar";
 import './Bookinform.css';
 
 function BookingForm() {
@@ -22,7 +21,7 @@ function BookingForm() {
         "Psychiatrist",
     ];
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
         const newBooking = {
             appointmentDateTime,
@@ -32,22 +31,12 @@ function BookingForm() {
             status: "Pending",
         };
 
-        try {
-            await axios.post("http://localhost:8080/api/bookings", newBooking, {
-                headers: { "Content-Type": "application/json" },
-            });
-            alert("Appointment requested successfully!");
-            navigate("/confirmation");
-        } catch (error) {
-            console.error("Error booking appointment:", error);
-            alert("Failed to book appointment. Try again later.");
-        }
+        navigate("/payment", { state: { appointmentData: newBooking } });
     };
 
     return (
         <div>
-            <HomeNavbar /> {/* Add the navbar at the top */}
-            
+            <HomeNavbar />
             <div className="form-container">
                 <h2>Book an Appointment</h2>
                 <form onSubmit={handleSubmit}>
@@ -94,7 +83,7 @@ function BookingForm() {
                             required
                         />
                     </label>
-                    <button type="submit">Book Appointment</button>
+                    <button type="submit">Proceed to Payment</button>
                 </form>
             </div>
         </div>

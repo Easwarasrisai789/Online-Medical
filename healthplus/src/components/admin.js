@@ -1,75 +1,76 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import './admin.css'; // Optional: Add styles for admin page
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "./admin.css";
 
 function Admin() {
-  const [users, setUsers] = useState([]);
+  const [activeView, setActiveView] = useState("users"); // 'users' or 'doctors'
+  const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
 
-  // Fetch all users when the component is mounted
+  // Fetch users or doctors based on the active view
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError("");
       try {
-        const response = await axios.get('http://localhost:8080/api/users');
-        setUsers(response.data);
-        setLoading(false);
+        const endpoint =
+          activeView === "users"
+            ? "http://localhost:8080/api/users"
+            : "http://localhost:8080/api/doctor";
+        const response = await axios.get(endpoint);
+        setData(response.data);
       } catch (err) {
-        setError('Error fetching user data. Please try again.');
+        setError("Failed to fetch data. Please try again.");
+      } finally {
         setLoading(false);
       }
     };
 
-    fetchUsers();
-  }, []);
-
-  // Delete user by ID
-  const handleDelete = async (userId) => {
-    try {
-      await axios.delete(`http://localhost:8080/api/users/${userId}`);
-      setUsers(users.filter((user) => user.id !== userId)); // Update the user list
-      setSuccess('User deleted successfully.');
-      setError('');
-    } catch (err) {
-      setError('Failed to delete user. Please try again.');
-      setSuccess('');
-    }
-  };
+    fetchData();
+  }, [activeView]);
 
   return (
-    <div className="admin-container">
-      <h2>User Management</h2>
-      {loading ? (
-        <p>Loading users...</p>
-      ) : error ? (
-        <p style={{ color: 'red' }}>{error}</p>
-      ) : (
-        <table className="user-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id}>
-                <td>{user.id}</td>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>
-                  <button onClick={() => handleDelete(user.id)}>Delete</button>
-                  {/* Add more buttons for actions like Edit, View details, etc. */}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-      {success && <p style={{ color: 'green' }}>{success}</p>}
+    <div className="admin-page">
+      <div className="admin-sidebar">
+        <h2>Admin Panel</h2>
+        <button onClick={() => setActiveView("users")}>View Users</button>
+        <button onClick={() => setActiveView("doctors")}>View Doctors</button>
+      </div>
+      <div className="admin-content">
+        {loading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p className="error">{error}</p>
+        ) : (
+          <div>
+            <h3>{activeView === "users" ? "Users" : "Doctors"}</h3>
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  
+                  {activeView === "users" && <th>Name</th>}
+                  {activeView === "users" && <th>Email</th>}
+                  {activeView === "doctors" && <th>Id</th>}
+                  {activeView === "doctors" && <th>Password</th>}     
+                </tr>
+              </thead>
+              <tbody>
+                {data.map((item) => (
+                  <tr key={item.id}>
+                  
+                    {activeView === "users" && <td>{item.name}</td>}
+
+                    {activeView === "users" && <td>{item.email}</td>}
+                    {activeView === "doctors" && <td>{item.doctorId}</td>}
+                    {activeView === "doctors" && <td>{item.password}</td>}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

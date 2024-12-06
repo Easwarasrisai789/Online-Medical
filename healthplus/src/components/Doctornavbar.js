@@ -20,7 +20,7 @@ function DoctorNavbar() {
           <Link to="/AppointmentsPage">Appointments</Link> {/* Link to the Appointments page */}
         </li>
         <li>
-          <Link to="/patients">Patients</Link>
+          <Link to="/patientdetails">Patients</Link>
         </li>
         <li>
           <Link to="/prescriptions">Prescriptions</Link>

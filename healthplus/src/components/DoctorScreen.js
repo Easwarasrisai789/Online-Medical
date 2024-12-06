@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './DoctorScreen.css';
+import LoadingSpinner from './LoadingSpinner'; // Import the LoadingSpinner component
 
 function DoctorScreen() {
   const [medicines, setMedicines] = useState([]);
@@ -8,6 +10,17 @@ function DoctorScreen() {
     { sender: 'Doctor', text: 'Hello, how can I assist you today?' },
   ]);
   const [chatInput, setChatInput] = useState('');
+  const [isLoadingSpinnerVisible, setIsLoadingSpinnerVisible] = useState(false);
+  const [isDoctorOnline, setIsDoctorOnline] = useState(true); // New state to track doctor status
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Ensure the doctor is set as online initially
+    setIsDoctorOnline(true);
+    return () => {
+      setIsDoctorOnline(false); // Cleanup on unmount to mark doctor as offline
+    };
+  }, []);
 
   const handleAddMedicine = () => {
     if (medicineInput) {
@@ -22,25 +35,42 @@ function DoctorScreen() {
 
   const handleSendMessage = () => {
     if (chatInput) {
-      // Add the message from the doctor to the chat
       setChatMessages([...chatMessages, { sender: 'Doctor', text: chatInput }]);
       setChatInput('');
     }
   };
 
   const handleCancelCall = () => {
-    console.log('Call canceled'); // Replace with actual call-canceling logic
+    setIsLoadingSpinnerVisible(true);
+    setTimeout(() => {
+      setIsLoadingSpinnerVisible(false);
+      setIsDoctorOnline(false); // Set doctor status to offline when call ends
+      navigate('/home');
+    }, 4000);
   };
 
   return (
     <div className="doctorscreen-container">
+      {/* Display loading spinner and message when isLoadingSpinnerVisible is true */}
+      {isLoadingSpinnerVisible && (
+        <div className="loading-overlay">
+          <LoadingSpinner message="Ending session..." />
+        </div>
+      )}
+
+      {/* Display doctor status box when isDoctorOnline is true */}
+      {isDoctorOnline && (
+        <div className="doctor-status-box">
+          <p>Doctor is online</p>
+        </div>
+      )}
+
       <div className="doctorscreen-video-call">
         <button onClick={handleCancelCall} className="doctorscreen-cancel-call-button">Cancel Call</button>
         <p>Video Call</p>
       </div>
 
       <div className="doctorscreen-chat-section">
-        {/* Medicine checkout area for the doctor only */}
         <div className="doctorscreen-medicine-checkout">
           <h3>Medicine Checkout</h3>
           <div className="doctorscreen-medicine-list">
