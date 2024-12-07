@@ -18,7 +18,7 @@ function Login() {
         if (email === "admin@gmail.com" && password === "admin123") {
             navigate("/admin");
             return;
-        }
+        } 
 
         const loginData = { email, password };
 

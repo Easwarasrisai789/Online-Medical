@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import DoctorNavbar from '../components/Doctornavbar';
 import LoadingSpinner from './LoadingSpinner';
 import './Viewbooking.css';
@@ -10,8 +9,12 @@ function PatientDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [isLoadingSpinnerVisible, setIsLoadingSpinnerVisible] = useState(false);
   const [spinnerMessage, setSpinnerMessage] = useState('');
-  const navigate = useNavigate();
-
+  const [hiddenButtons, setHiddenButtons] = useState(() => {
+    const savedState = localStorage.getItem('hiddenButtons');
+    return savedState ? JSON.parse(savedState) : {};
+  });
+  const [ setMeetingEnded] = useState({});
+  
   useEffect(() => {
     const fetchBookings = async () => {
       setLoading(true);
@@ -33,8 +36,22 @@ function PatientDetailsPage() {
     setSpinnerMessage('Joining session...');
     setTimeout(() => {
       setIsLoadingSpinnerVisible(false);
-      navigate('/doctorscreen', { state: { bookingId } });
-    }, 4000);
+
+      // Redirect to the Google Meet link
+      window.location.href = 'https://meet.google.com/wuh-homn-mzb';
+
+      // Update hidden buttons state
+      setHiddenButtons((prevState) => {
+        const updatedState = { ...prevState, [bookingId]: true };
+        localStorage.setItem('hiddenButtons', JSON.stringify(updatedState));
+        return updatedState;
+      });
+
+      // Delay to show the "Meeting Ended" message
+      setTimeout(() => {
+        setMeetingEnded((prevState) => ({ ...prevState, [bookingId]: true }));
+      }, 5000); // 5 seconds delay
+    }, 4000); // 4 seconds delay for loading spinner
   };
 
   return (
@@ -72,8 +89,14 @@ function PatientDetailsPage() {
                   <td>{booking.reason}</td>
                   <td>{booking.status}</td>
                   <td>
-                    {booking.status === 'Accepted' && (
-                      <button onClick={() => handleJoinSession(booking.id)}>Join Session</button>
+                    {hiddenButtons[booking.id] ? (
+                      <span>Meeting Ended</span>
+                    ) : (
+                      booking.status === 'Accepted' && (
+                        <button onClick={() => handleJoinSession(booking.id)}>
+                          Join Session
+                        </button>
+                      )
                     )}
                   </td>
                 </tr>
@@ -89,3 +112,4 @@ function PatientDetailsPage() {
 }
 
 export default PatientDetailsPage;
+  

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import HomeNavbar from "./HomeNavbar";
 import './Bookinform.css';
@@ -8,7 +9,7 @@ function BookingForm() {
     const [doctorSpecialty, setDoctorSpecialty] = useState("");
     const [userName, setUserName] = useState("");
     const [reason, setReason] = useState("");
-    const [file, setFile] = useState(null); // State to handle the selected file
+    const [file, setFile] = useState(null);
     const navigate = useNavigate();
 
     const specialties = [
@@ -23,40 +24,49 @@ function BookingForm() {
     ];
 
     const handleFileChange = (e) => {
-        setFile(e.target.files[0]); // Get the selected file
+        setFile(e.target.files[0]);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Check if file is uploaded (optional validation)
+    
         if (!file) {
             alert("Please upload a file.");
             return;
         }
-
-        // Create a form data object to handle file and text fields (if sending to backend)
+    
         const formData = new FormData();
         formData.append("appointmentDateTime", appointmentDateTime);
         formData.append("doctorSpecialty", doctorSpecialty);
         formData.append("userName", userName);
         formData.append("reason", reason);
         formData.append("status", "Pending");
-        formData.append("file", file);
-
-        // Navigate to the payment page with form data
-        const newBooking = {
-            appointmentDateTime,
-            doctorSpecialty,
-            userName,
-            reason,
-            fileName: file.name,
-            status: "Pending",
-        };
-
-        navigate("/payment", { state: { appointmentData: newBooking } });
+        formData.append("image", file);
+    
+        // Log FormData for debugging
+        for (let pair of formData.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
+    
+        try {
+            const response = await axios.post("http://localhost:8080/api/bookings", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
+    
+            if (response.status === 200) {
+                alert("Appointment booked successfully!");
+                navigate("/payment", { state: { bookingId: response.data.id } });
+            } else {
+                alert("Failed to book the appointment. Status: " + response.status);
+            }
+        } catch (error) {
+            console.error("Error submitting form:", error);
+            alert("Something went wrong. Please try again.");
+        }
     };
-
+    
     return (
         <div>
             <HomeNavbar />
@@ -110,7 +120,7 @@ function BookingForm() {
                         Upload File:
                         <input
                             type="file"
-                            accept="image/*" // Optional: Restrict to image files
+                            accept="image/*"
                             onChange={handleFileChange}
                             required
                         />

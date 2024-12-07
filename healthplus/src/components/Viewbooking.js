@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // Import for navigation
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import HomeNavbar from "./HomeNavbar";
 import LoadingSpinner from "./LoadingSpinner"; // Import the new LoadingSpinner component
 import "./Viewbooking.css"; // External CSS for styling
@@ -10,7 +10,13 @@ function BookingsList() {
   const [loading, setLoading] = useState(true);
   const [isLoadingSpinnerVisible, setIsLoadingSpinnerVisible] = useState(false);
   const [spinnerMessage, setSpinnerMessage] = useState(''); // State for the spinner message
-  const navigate = useNavigate(); // Initialize navigate function
+  const [hiddenButtons, setHiddenButtons] = useState(() => {
+    // Retrieve hidden buttons state from local storage
+    const savedState = localStorage.getItem('hiddenButtons');
+    return savedState ? JSON.parse(savedState) : {};
+  });
+
+  const navigate = useNavigate(); // Initialize useNavigate for navigation
 
   // Fetch bookings on component load
   useEffect(() => {
@@ -26,16 +32,29 @@ function BookingsList() {
     };
 
     fetchBookings();
-  }, []);
+  }, []); // Empty dependency array ensures the effect runs once when the component mounts
 
-  // Function to handle navigating to the DoctorScreen with a delay and loading spinner
   const handleJoinSession = (bookingId) => {
-    setIsLoadingSpinnerVisible(true); // Show the loading spinner
-    setSpinnerMessage("Joining session..."); // Set the spinner message
+    setIsLoadingSpinnerVisible(true);
+    setSpinnerMessage('Joining session...');
     setTimeout(() => {
-      setIsLoadingSpinnerVisible(false); // Hide the spinner after 4 seconds
-      navigate("/UserScreen", { state: { bookingId } }); // Navigate after 4 seconds
-    }, 4000); // Delay time set to 4 seconds (4000 milliseconds)
+      setIsLoadingSpinnerVisible(false);
+
+      // Redirect to the specific Google Meet link
+      window.location.href = "https://meet.google.com/bcf-iuwx-tub";
+
+      // Update hidden buttons state and persist it to local storage
+      setHiddenButtons((prevState) => {
+        const updatedState = { ...prevState, [bookingId]: true };
+        localStorage.setItem('hiddenButtons', JSON.stringify(updatedState)); // Save to local storage
+        return updatedState;
+      });
+    }, 4000); // 4 seconds delay for loading
+  };
+
+  const handleViewPrescription = (bookingId, userName) => {
+    // Navigate to the prescription details page with the patient name
+    navigate(`/details/${userName}`);
   };
 
   return (
@@ -65,7 +84,8 @@ function BookingsList() {
                 <th>Patient Name</th>
                 <th>Reason</th>
                 <th>Status</th>
-                <th>Actions</th> {/* New column for the action link */}
+                <th>Actions</th>
+                <th>Prescription</th> {/* New column for prescription link */}
               </tr>
             </thead>
             <tbody>
@@ -78,9 +98,20 @@ function BookingsList() {
                   <td>{booking.reason}</td>
                   <td>{booking.status}</td>
                   <td>
-                    {booking.status === "Accepted" && (
-                      <button onClick={() => handleJoinSession(booking.id)}>Join Session</button>
+                    {hiddenButtons[booking.id] ? (
+                      <span>Meeting Ended</span>
+                    ) : (
+                      booking.status === "Accepted" && (
+                        <button onClick={() => handleJoinSession(booking.id)}>
+                          Join Session
+                        </button>
+                      )
                     )}
+                  </td>
+                  <td>
+                    <button onClick={() => handleViewPrescription(booking.id, booking.userName)}>
+                      View Prescription
+                    </button>
                   </td>
                 </tr>
               ))}

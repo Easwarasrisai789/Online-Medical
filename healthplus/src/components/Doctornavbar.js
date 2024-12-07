@@ -23,7 +23,7 @@ function DoctorNavbar() {
           <Link to="/patientdetails">Patients</Link>
         </li>
         <li>
-          <Link to="/prescriptions">Prescriptions</Link>
+        <Link to="/PrescriptionsPage">Prescriptions</Link>
         </li>
         <li>
           <button onClick={handleLogout} className="doc-navbar-logout-button">

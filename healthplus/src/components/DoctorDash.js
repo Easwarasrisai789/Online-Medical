@@ -1,5 +1,4 @@
 import React from 'react';
-// Correct import assuming both files are in the same directory
 import './doctordash.css'; // Styles for DoctorDash
 import DoctorNavbar from './Doctornavbar'; 
 
@@ -24,19 +23,30 @@ const DoctorDash = () => {
 
     return (
         <div className="doctor-dash-container">
-            <DoctorNavbar /> {/* Add the DoctorNavbar component */}
+            <DoctorNavbar />
             <div className="doctor-dash-welcome-message">
-                <h1>Welcome to Doctor Dashboard</h1>
+                <h1>Welcome to Your Doctor Dashboard</h1>
+                <p>Here’s a quick overview of your current status and activities.</p>
+                <input type="text" placeholder="Search patients or appointments..." className="search-bar" />
             </div>
 
             <div className="doctor-dash-dashboard-stats">
                 <div className="doctor-dash-quick-stats">
                     <h2>Quick Stats</h2>
-                    <ul>
-                        <li><strong>Total Patients:</strong> {quickStats.totalPatients}</li>
-                        <li><strong>Active Calls:</strong> {quickStats.activeCalls}</li>
-                        <li><strong>Pending Appointments:</strong> {quickStats.pendingAppointments}</li>
-                    </ul>
+                    <div className="stats-cards">
+                        <div className="stat-card">
+                            <h3>Total Patients</h3>
+                            <p>{quickStats.totalPatients}</p>
+                        </div>
+                        <div className="stat-card">
+                            <h3>Active Calls</h3>
+                            <p>{quickStats.activeCalls}</p>
+                        </div>
+                        <div className="stat-card">
+                            <h3>Pending Appointments</h3>
+                            <p>{quickStats.pendingAppointments}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -51,13 +61,24 @@ const DoctorDash = () => {
 
             <div className="doctor-dash-appointments">
                 <h2>Upcoming Appointments</h2>
-                {upcomingAppointments.map((appointment, index) => (
-                    <div key={index} className={`doctor-dash-appointment-card ${appointment.status.toLowerCase()}`}>
-                        <p><strong>Patient:</strong> {appointment.patient}</p>
-                        <p><strong>Time:</strong> {appointment.time}</p>
-                        <p><strong>Status:</strong> {appointment.status}</p>
-                    </div>
-                ))}
+                <div className="appointments-list">
+                    {upcomingAppointments.map((appointment, index) => (
+                        <div key={index} className={`appointment-card ${appointment.status.toLowerCase()}`}>
+                            <p><strong>Patient:</strong> {appointment.patient}</p>
+                            <p><strong>Time:</strong> {appointment.time}</p>
+                            <p><strong>Status:</strong> {appointment.status}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="doctor-dash-notifications">
+                <h2>Notifications</h2>
+                <ul>
+                    <li>New message from Alice Brown regarding her prescription.</li>
+                    <li>Reminder: Follow-up with Bob White in 2 days.</li>
+                    <li>New appointment request from Claire Adams.</li>
+                </ul>
             </div>
         </div>
     );

@@ -1,91 +1,21 @@
-/* Welcome modal styles */
-.doctor1-dash-welcome-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+.doctor-dash-container {
+    padding: 50px;
+    background-color: #f4f7fa;
+    max-height: 700px; /* Set a maximum height */
+    overflow-y: auto; /* Enable vertical scrolling */
+    
 }
 
-.doctor1-dash-welcome-content {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+/* Optional: Add styling for the scroll bar */
+.doctor-dash-container::-webkit-scrollbar {
+    width: 8px; /* Scrollbar width */
 }
 
-.doctor1-dash-modal-close-button {
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 15px;
+.doctor-dash-container::-webkit-scrollbar-thumb {
+    background-color: #888; /* Scrollbar thumb color */
+    border-radius: 4px;
 }
 
-/* Animation for quick stats */
-.doctor1-dash-quick-stats {
-    background-color: #4caf50;
-    color: white;
-    padding: 15px;
-    border-radius: 8px;
-    width: 30%;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease, transform 0.2s ease-in-out;
-    animation: bounceIn 0.6s ease-out;
-}
-
-.doctor1-dash-quick-stats:hover {
-    background-color: #45a049;
-    transform: translateY(-5px);
-}
-
-@keyframes bounceIn {
-    0% {
-        transform: translateY(-30px);
-        opacity: 0;
-    }
-    60% {
-        transform: translateY(10px);
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-/* Notification animation for activities */
-.doctor1-dash-recent-activities li {
-    background-color: #fff;
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 5px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease;
-    animation: slideIn 0.5s ease-in-out;
-}
-
-@keyframes slideIn {
-    from {
-        transform: translateX(-100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-/* Icon styles */
-.doctor1-dash-recent-activities i {
-    color: #4caf50;
-    margin-right: 10px;
+.doctor-dash-container::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Scrollbar thumb color on hover */
 }

@@ -39,6 +39,12 @@
     transform: rotate(360deg);
   }
 }
+.booking-image {
+  width: 100px;
+  height: auto;
+  border-radius: 5px;
+  object-fit: cover;
+}
 
 .loading-overlay p {
   margin-top: 10px;
